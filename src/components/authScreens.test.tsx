@@ -4,14 +4,19 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { LoginScreen } from './LoginScreen';
 import { RegisterScreen } from './RegisterScreen';
 import * as auth from '../auth/authApi';
+import { catalogsApi } from '../api/schedulingApi';
 
 vi.mock('../auth/authApi', async (original) => {
   const actual = await original<typeof import('../auth/authApi')>();
   return { ...actual, login: vi.fn(), register: vi.fn() };
 });
+vi.mock('../api/schedulingApi', () => ({ catalogsApi: { insurancePlans: vi.fn() } }));
 
 describe('pantallas de autenticación', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(catalogsApi.insurancePlans).mockResolvedValue([]);
+  });
 
   it('envía las credenciales y muestra el resultado de un login válido', async () => {
     const user = userEvent.setup();
@@ -60,5 +65,26 @@ describe('pantallas de autenticación', () => {
       email: 'ana@example.com', phone: '3001234567', password: 'Password123*',
     }));
     expect(onSuccess).toHaveBeenCalledWith(account);
+  });
+
+  it('carga planes activos y envía el plan seleccionado como FK', async () => {
+    const user = userEvent.setup();
+    vi.mocked(catalogsApi.insurancePlans).mockResolvedValue([
+      { id: '7', code: 'PLAN-DEMO', name: 'Plan Demo', active: true },
+    ]);
+    vi.mocked(auth.register).mockResolvedValue({ id: '3', name: 'Ana Ruiz', email: 'ana@example.com', roles: ['USER'] });
+    render(<RegisterScreen onRegisterSuccess={vi.fn()} onNavigateLogin={vi.fn()} />);
+
+    const planSelect = await screen.findByLabelText(/plan de afiliación/i);
+    await user.selectOptions(planSelect, '7');
+    expect(planSelect).toHaveValue('7');
+    await user.type(screen.getByLabelText(/nombres/i), 'Ana');
+    await user.type(screen.getByLabelText(/apellidos/i), 'Ruiz');
+    await user.type(screen.getByLabelText(/correo electrónico/i), 'ana@example.com');
+    await user.type(screen.getByLabelText(/teléfono móvil/i), '3001234567');
+    await user.type(screen.getByLabelText(/número de documento/i), '123456');
+    await user.type(screen.getByLabelText(/^contraseña/i), 'Password123*');
+    await user.click(screen.getByRole('button', { name: /registrarme y acceder/i }));
+    expect(auth.register).toHaveBeenCalledWith(expect.objectContaining({ insurancePlanId: '7' }));
   });
 });

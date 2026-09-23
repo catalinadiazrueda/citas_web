@@ -92,7 +92,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({
               </h1>
 
               <p className="text-slate-300 text-sm sm:text-base leading-relaxed font-light">
-                Crea tu expediente digital en segundos y accede a especialistas certificados, recordatorios y recetas en línea.
+                Crea tu cuenta de laboratorio en segundos y consulta la oferta disponible para agendar tus citas.
               </p>
 
               <div className="pt-2 space-y-2.5 text-xs text-slate-300">
@@ -106,7 +106,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">✓</div>
-                  <span>Historial médico y recetas descargables</span>
+                  <span>Agenda sintética conectada directamente con la API</span>
                 </div>
               </div>
             </div>
@@ -383,7 +383,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({
                 {isLoading ? (
                   <>
                     <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                    <span>Creando expediente digital...</span>
+                    <span>Creando tu cuenta...</span>
                   </>
                 ) : (
                   <span>Registrarme y Acceder</span>
