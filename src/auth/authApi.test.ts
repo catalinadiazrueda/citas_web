@@ -32,7 +32,7 @@ describe('authApi', () => {
     const user = await auth.login('USER@Example.com ', 'Password123*', false);
 
     expect(user).toMatchObject({ id: 'user-1', email: 'user@example.com', roles: ['USER'] });
-    expect(fetchMock).toHaveBeenCalledWith('http://localhost:8080/api/v1/auth/login', expect.objectContaining({
+    expect(fetchMock).toHaveBeenCalledWith('http://localhost:8081/api/v1/auth/login', expect.objectContaining({
       method: 'POST',
       credentials: 'include',
       headers: expect.objectContaining({ 'X-Requested-With': 'XMLHttpRequest' }),
@@ -98,7 +98,7 @@ describe('authApi', () => {
 
     await auth.logout();
 
-    expect(fetchMock).toHaveBeenCalledWith('http://localhost:8080/api/v1/auth/logout', expect.objectContaining({
+    expect(fetchMock).toHaveBeenCalledWith('http://localhost:8081/api/v1/auth/logout', expect.objectContaining({
       method: 'POST', credentials: 'include',
     }));
     expect(localStorage.getItem('portal_citas_user')).toBeNull();

@@ -1,7 +1,7 @@
 import { getAccessToken } from '../auth/authApi';
 import type { Appointment, AvailabilityBlock, AvailableProfessional, CatalogItem, Professional, Specialty } from '../types';
 
-const API_URL = (import.meta.env.VITE_API_URL ?? 'http://localhost:8080').replace(/\/$/, '');
+const API_URL = (import.meta.env.VITE_API_URL ?? 'http://localhost:8081').replace(/\/$/, '');
 export class SchedulingApiError extends Error { constructor(public readonly status: number, message: string) { super(message); this.name = 'SchedulingApiError'; } }
 function query(params: Record<string, string | undefined>): string { const entries = Object.entries(params).filter(([, value]) => value) as [string, string][]; return entries.length ? `?${new URLSearchParams(entries).toString()}` : ''; }
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {

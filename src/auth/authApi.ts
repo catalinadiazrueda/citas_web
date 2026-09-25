@@ -1,6 +1,6 @@
 import type { User } from '../types';
 
-const API_URL = (import.meta.env.VITE_API_URL ?? 'http://localhost:8080').replace(/\/$/, '');
+const API_URL = (import.meta.env.VITE_API_URL ?? 'http://localhost:8081').replace(/\/$/, '');
 const AUTH_PATH = '/api/v1/auth';
 const REQUEST_HEADERS = {
   'Content-Type': 'application/json',
@@ -166,6 +166,14 @@ export async function logout(): Promise<void> {
   await request<void>('/logout', { method: 'POST' });
   accessToken = null;
   clearUser();
+}
+
+export async function requestPasswordRecovery(email: string): Promise<void> {
+  await request<void>('/password-recovery', { method: 'POST', body: JSON.stringify({ email }) });
+}
+
+export async function resetPassword(token: string, newPassword: string): Promise<void> {
+  await request<void>('/password-reset', { method: 'POST', body: JSON.stringify({ token, newPassword }) });
 }
 
 export function getAccessToken(): string | null {
