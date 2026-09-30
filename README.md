@@ -4,7 +4,7 @@ Cliente React + TypeScript del portal de citas, importado del prototipo aprobado
 
 ## Desarrollo local
 
-1. Copia `.env.example` a `.env.local` si la API no está en `http://localhost:8081` (la URL configurable sigue siendo `VITE_API_URL`).
+1. Copia `.env.example` a `.env.local` si la API no está en `http://localhost:8080` (la URL configurable sigue siendo `VITE_API_URL`).
 2. Ejecuta `npm install`.
 3. Ejecuta `npm run dev` y abre `http://localhost:5173`.
 
@@ -18,4 +18,4 @@ npm test
 npm run build
 ```
 
-La interfaz cubre autenticación, catálogo de reserva, disponibilidad y superficies iniciales de administración/profesional. Las pantallas de perfil, mis citas, cancelación, reprogramación, agenda profesional, auditoría y automatizaciones requieren sus incrementos funcionales correspondientes antes de la entrega final.
+La interfaz cubre autenticación, reserva, disponibilidad, administración inicial de oferta/profesionales, agenda profesional, mis citas, cancelación y solicitudes de reprogramación. La ejecución de los workflows n8n se configura por separado en la instancia del trainer. Consulta `citas-api/automations/n8n/CONFIGURACION_SEGURA.md` para los pasos y límites de esa configuración.

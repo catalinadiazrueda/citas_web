@@ -1,7 +1,7 @@
 import { getAccessToken } from '../auth/authApi';
 import type { Appointment, AvailabilityBlock, AvailableProfessional, CatalogItem, Professional, Specialty } from '../types';
 
-const API_URL = (import.meta.env.VITE_API_URL ?? 'http://localhost:8081').replace(/\/$/, '');
+const API_URL = (import.meta.env.VITE_API_URL ?? 'http://localhost:8080').replace(/\/$/, '');
 export class SchedulingApiError extends Error { constructor(public readonly status: number, message: string) { super(message); this.name = 'SchedulingApiError'; } }
 function query(params: Record<string, string | undefined>): string { const entries = Object.entries(params).filter(([, value]) => value) as [string, string][]; return entries.length ? `?${new URLSearchParams(entries).toString()}` : ''; }
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
@@ -11,7 +11,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   if (!response.ok) { const problem = await response.json().catch(() => null) as { detail?: string } | null; throw new SchedulingApiError(response.status, problem?.detail ?? 'No fue posible completar la solicitud.'); }
   if (response.status === 204) return undefined as T; return response.json() as Promise<T>;
 }
-export const catalogsApi = { locations: () => request<CatalogItem[]>('/catalogs/locations'), insurancePlans: () => request<CatalogItem[]>('/catalogs/plans'), specialties: () => request<Specialty[]>('/specialties') };
+export const catalogsApi = { locations: () => request<CatalogItem[]>('/catalogs/locations'), insurancePlans: () => request<CatalogItem[]>('/catalogs/plans'), regimes: () => request<CatalogItem[]>('/catalogs/regimes'), specialties: () => request<Specialty[]>('/specialties') };
 export const appointmentsApi = {
   availability: (filters: { locationId: string; specialtyId: string; professionalId?: string; date: string }) => request<AvailableProfessional[]>(`/availability${query(filters)}`),
   create: (input: { professionalId: string; locationId: string; specialtyId: string; date: string; startTime: string; reason?: string }) => request<Appointment>('/appointments', { method: 'POST', body: JSON.stringify(input) }),
@@ -24,9 +24,9 @@ export const appointmentsApi = {
 };
 export const profileApi = {
   get: () => request<{ firstName: string; lastName: string; email: string; phone: string }>('/me'),
-  update: (input: Partial<{ firstName: string; lastName: string; email: string; phone: string }>) => request('/me', { method: 'PUT', body: JSON.stringify(input) }),
-  affiliation: () => request<{ planId?: string; membershipNumber?: string; planName?: string }>('/me/affiliation'),
-  updateAffiliation: (planId: string, membershipNumber: string) => request('/me/affiliation', { method: 'PUT', body: JSON.stringify({ planId, membershipNumber }) }),
+  update: (input: Partial<{ firstName: string; lastName: string; email: string; phone: string }>) => request<{ firstName: string; lastName: string; email: string; phone: string }>('/me', { method: 'PUT', body: JSON.stringify(input) }),
+  affiliation: () => request<{ planId?: string; membershipNumber?: string; planName?: string; epsName?: string; regimeName?: string }>('/me/affiliation'),
+  updateAffiliation: (planId: string, membershipNumber: string) => request<{ planId?: string; membershipNumber?: string; planName?: string; epsName?: string; regimeName?: string }>('/me/affiliation', { method: 'PUT', body: JSON.stringify({ planId, membershipNumber }) }),
 };
 export const adminApi = {
   specialties: () => request<Specialty[]>('/admin/specialties'), createSpecialty: (input: { code: string; name: string; durationMinutes: 30 | 60; general: boolean }) => request<Specialty>('/admin/specialties', { method: 'POST', body: JSON.stringify(input) }),
@@ -35,6 +35,10 @@ export const adminApi = {
   createProfessional: (input: Record<string, unknown>) => request<{ id: string }>('/admin/professionals', { method: 'POST', body: JSON.stringify(input) }),
   assignSpecialties: (id: string, specialtyIds: string[], primarySpecialtyId: string) => request<void>(`/admin/professionals/${id}/specialties`, { method: 'PUT', body: JSON.stringify({ specialtyIds, primarySpecialtyId }) }),
   assignLocations: (id: string, locationIds: string[]) => request<void>(`/admin/professionals/${id}/locations`, { method: 'PUT', body: JSON.stringify({ locationIds }) }), setActive: (id: string, active: boolean) => request<Professional>(`/admin/professionals/${id}/active`, { method: 'PATCH', body: JSON.stringify({ active }) }),
+  eps: () => request<Array<{ id: string; code: string; name: string; active: boolean }>>('/admin/eps'),
+  saveEps: (id: string | undefined, input: { code: string; name: string; active: boolean }) => request(`/admin/eps${id ? `/${id}` : ''}`, { method: id ? 'PATCH' : 'POST', body: JSON.stringify(input) }),
+  plans: () => request<Array<{ id: string; epsId: string; regimeId: string; code: string; name: string; active: boolean }>>('/admin/plans'),
+  savePlan: (id: string | undefined, input: { epsId: string; regimeId: string; code: string; name: string; active: boolean }) => request(`/admin/plans${id ? `/${id}` : ''}`, { method: id ? 'PATCH' : 'POST', body: JSON.stringify(input) }),
 };
 export const availabilityApi = {
   listMine: (date?: string, locationId?: string) => request<AvailabilityBlock[]>(`/professional/availability-blocks${query({ date, locationId })}`), create: (input: { locationId: string; date: string; startTime: string; endTime: string }) => request<AvailabilityBlock>('/professional/availability-blocks', { method: 'POST', body: JSON.stringify(input) }),

@@ -1,6 +1,6 @@
 import type { User } from '../types';
 
-const API_URL = (import.meta.env.VITE_API_URL ?? 'http://localhost:8081').replace(/\/$/, '');
+const API_URL = (import.meta.env.VITE_API_URL ?? 'http://localhost:8080').replace(/\/$/, '');
 const AUTH_PATH = '/api/v1/auth';
 const REQUEST_HEADERS = {
   'Content-Type': 'application/json',
