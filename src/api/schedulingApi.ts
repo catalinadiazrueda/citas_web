@@ -17,6 +17,16 @@ export const appointmentsApi = {
   create: (input: { professionalId: string; locationId: string; specialtyId: string; date: string; startTime: string; reason?: string }) => request<Appointment>('/appointments', { method: 'POST', body: JSON.stringify(input) }),
   pendingSpecialized: () => request<Appointment[]>('/admin/appointments/pending-specialized'),
   decide: (id: string, decision: 'APPROVE' | 'REJECT', reason?: string) => request<Appointment>(`/admin/appointments/${id}/decision`, { method: 'POST', body: JSON.stringify({ decision, reason }) }),
+  mine: (status?: string, date?: string) => request<Appointment[]>(`/appointments/mine${query({ status, date })}`),
+  cancel: (id: string) => request<void>(`/appointments/${id}/cancel`, { method: 'POST' }),
+  reschedule: (id: string, date: string, startTime: string) => request<{ id: string }>(`/appointments/${id}/reschedules`, { method: 'POST', body: JSON.stringify({ date, startTime }) }),
+  history: (id: string) => request<Array<{ status: string; source: string; reason?: string; changedAt: string }>>(`/appointments/${id}/history`),
+};
+export const profileApi = {
+  get: () => request<{ firstName: string; lastName: string; email: string; phone: string }>('/me'),
+  update: (input: Partial<{ firstName: string; lastName: string; email: string; phone: string }>) => request('/me', { method: 'PUT', body: JSON.stringify(input) }),
+  affiliation: () => request<{ planId?: string; membershipNumber?: string; planName?: string }>('/me/affiliation'),
+  updateAffiliation: (planId: string, membershipNumber: string) => request('/me/affiliation', { method: 'PUT', body: JSON.stringify({ planId, membershipNumber }) }),
 };
 export const adminApi = {
   specialties: () => request<Specialty[]>('/admin/specialties'), createSpecialty: (input: { code: string; name: string; durationMinutes: 30 | 60; general: boolean }) => request<Specialty>('/admin/specialties', { method: 'POST', body: JSON.stringify(input) }),
@@ -29,5 +39,11 @@ export const adminApi = {
 export const availabilityApi = {
   listMine: (date?: string, locationId?: string) => request<AvailabilityBlock[]>(`/professional/availability-blocks${query({ date, locationId })}`), create: (input: { locationId: string; date: string; startTime: string; endTime: string }) => request<AvailabilityBlock>('/professional/availability-blocks', { method: 'POST', body: JSON.stringify(input) }),
   update: (id: string, input: Partial<{ locationId: string; date: string; startTime: string; endTime: string }>) => request<AvailabilityBlock>(`/professional/availability-blocks/${id}`, { method: 'PATCH', body: JSON.stringify(input) }), remove: (id: string) => request<void>(`/professional/availability-blocks/${id}`, { method: 'DELETE' }),
+};
+export const operationsApi = {
+  agenda: (date?: string, locationId?: string) => request<Appointment[]>(`/professional/agenda${query({ date, locationId })}`),
+  close: (id: string, status: 'COMPLETED' | 'NO_SHOW') => request<void>(`/professional/appointments/${id}/close`, { method: 'POST', body: JSON.stringify({ status }) }),
+  pendingReschedules: () => request<Appointment[]>('/admin/reschedules/pending'),
+  decideReschedule: (id: string, decision: 'APPROVE' | 'REJECT', reason?: string) => request(`/admin/reschedules/${id}/decision`, { method: 'POST', body: JSON.stringify({ decision, reason }) }),
 };
 export function schedulingErrorMessage(error: unknown): string { if (!(error instanceof SchedulingApiError)) return 'Ocurrió un error inesperado.'; if (error.status === 401) return 'Tu sesión venció. Inicia sesión nuevamente.'; if (error.status === 403) return 'No tienes permiso para realizar esta acción.'; if (error.status === 404) return 'El recurso solicitado no está disponible.'; if (error.status === 409) return 'El horario dejó de estar disponible. Selecciona otro horario.'; if (error.status === 400) return 'Revisa los datos ingresados.'; return error.message; }
