@@ -24,7 +24,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({
   const [insurancePlanId, setInsurancePlanId] = useState('');
   const [insurancePlans, setInsurancePlans] = useState<CatalogItem[]>([]);
   const [showPassword, setShowPassword] = useState(false);
-  const [acceptTerms, setAcceptTerms] = useState(true);
+  const [acceptTerms, setAcceptTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -39,7 +39,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({
       return;
     }
     if (!acceptTerms) {
-      setErrorMessage('Debes aceptar el tratamiento confidencial de datos de salud.');
+      setErrorMessage('Debes aceptar el tratamiento de tus datos para continuar.');
       return;
     }
 
@@ -102,7 +102,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">✓</div>
-                  <span>Recordatorios automáticos vía email y SMS</span>
+                  <span>Consulta y gestiona tus citas desde tu cuenta</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">✓</div>
@@ -269,7 +269,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({
                     <input
                       className="input-transition block w-full pl-10 pr-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                       id="reg-phone"
-                      placeholder="+34 612 000 000"
+                      placeholder="+57 300 000 0000"
                     required
                     type="tel"
                       value={phone}
@@ -368,7 +368,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({
                     onChange={(e) => setAcceptTerms(e.target.checked)}
                   />
                   <span>
-                    He leído y acepto el consentimiento de privacidad y resguardo seguro de datos médicos conforme a la legislación vigente.
+                    He leído y acepto el tratamiento de mis datos personales para gestionar mi cuenta y mis citas.
                   </span>
                 </label>
               </div>
@@ -407,7 +407,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({
             </p>
             <div className="flex items-center justify-center gap-1.5 text-slate-400 text-[11px]">
               <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
-              <span>Certificado bajo estándares de seguridad médica internacional.</span>
+              <span>Prototipo académico: utiliza únicamente datos sintéticos.</span>
             </div>
           </div>
         </section>

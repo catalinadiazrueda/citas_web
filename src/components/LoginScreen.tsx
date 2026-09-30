@@ -271,7 +271,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
             <div className="flex items-center justify-center gap-1.5 text-slate-400 text-xs">
               <ShieldCheck className="w-4 h-4 flex-shrink-0 text-slate-400" />
               <span className="text-[11px] leading-tight text-slate-400">
-                Tus datos médicos y personales están protegidos con cifrado de extremo a extremo.
+                Prototipo académico: utiliza únicamente datos sintéticos y no ingreses información médica real.
               </span>
             </div>
           </div>

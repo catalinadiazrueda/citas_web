@@ -58,6 +58,12 @@ describe('pantallas de autenticación', () => {
     await user.type(screen.getByLabelText(/teléfono móvil/i), '3001234567');
     await user.type(screen.getByLabelText(/número de documento/i), '123456');
     await user.type(screen.getByLabelText(/^contraseña/i), 'Password123*');
+    expect(screen.getByRole('checkbox')).not.toBeChecked();
+    await user.click(screen.getByRole('button', { name: /registrarme y acceder/i }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Debes aceptar el tratamiento de tus datos para continuar.');
+    expect(auth.register).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole('checkbox'));
     await user.click(screen.getByRole('button', { name: /registrarme y acceder/i }));
 
     expect(auth.register).toHaveBeenCalledWith(expect.objectContaining({
@@ -84,6 +90,7 @@ describe('pantallas de autenticación', () => {
     await user.type(screen.getByLabelText(/teléfono móvil/i), '3001234567');
     await user.type(screen.getByLabelText(/número de documento/i), '123456');
     await user.type(screen.getByLabelText(/^contraseña/i), 'Password123*');
+    await user.click(screen.getByRole('checkbox'));
     await user.click(screen.getByRole('button', { name: /registrarme y acceder/i }));
     expect(auth.register).toHaveBeenCalledWith(expect.objectContaining({ insurancePlanId: '7' }));
   });
